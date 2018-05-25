@@ -1,0 +1,16 @@
+# Logs
+logs
+*.log
+
+# Directories used by tools like Mocha & Istanbul
+coverage
+shippable
+
+# Dependency directory
+node_modules
+
+# Generated files
+config/development/contracts.json
+config/development/*.sol.js
+config/test/contracts.json
+dist
