@@ -1,0 +1,25 @@
+{
+  "name": "mvp-smart-contract",
+  "version": "1.0.0",
+  "description": "This repo will contain the main smart contract for the Jur MVP.",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jurteam/mvp-smart-contract.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jurteam/mvp-smart-contract/issues"
+  },
+  "homepage": "https://github.com/jurteam/mvp-smart-contract#readme",
+  "dependencies": {
+    "openzeppelin-solidity": "^1.9.0"
+  }
+}
