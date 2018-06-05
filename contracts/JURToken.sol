@@ -7,7 +7,13 @@ contract JURToken is MintableToken {
 
   mapping (bytes4 => bool) allowedFunctions;
 
-  function setAllowedFunction(bytes4 _sig, bool _valid) onlyOwner {
+  constructor(bytes4[] _allowedFunctions) public {
+    for (uint8 i = 0; i < _allowedFunctions.length; i++) {
+      allowedFunctions[_allowedFunctions[i]] = true;
+    }
+  }
+
+  function setAllowedFunction(bytes4 _sig, bool _valid) onlyOwner public {
     allowedFunctions[_sig] = _valid;
   }
 
@@ -16,7 +22,7 @@ contract JURToken is MintableToken {
   // start from the end (the LSB) and work back towwards the 16th byte (ie we
   // ignore the first 4 bytes AND the zero padding) creating a uint that can be
   // converted to an address.
-  function getAddr(bytes data) private pure returns (address) {
+  function getAddr(bytes data) internal pure returns (address) {
     uint result = 0;
     for (uint i = 35; i != 15; --i) {
       result += uint(data[i]) * (16 ** ((35 - i) * 2));

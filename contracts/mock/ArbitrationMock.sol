@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.23;
 
 import "../Arbitration.sol";
 
@@ -11,28 +11,28 @@ contract ArbitrationMock is Arbitration {
 
   uint mockedNow = 0;
 
-  function ArbitrationMock(address _jurToken, address[] _parties, uint256[] _dispersal, uint256[] _funding, bytes32 _agreementHash)
+  constructor(address _jurToken, address[] _parties, uint256[] _dispersal, uint256[] _funding, bytes32 _agreementHash) public
     Arbitration(_jurToken, _parties, _dispersal, _funding, _agreementHash)
   {
 
   }
 
-  function getBlockNumber() internal constant returns (uint) {
+  function getBlockNumber() view internal returns (uint) {
       return blockNumber;
   }
 
   function setMockedBlockNumber(uint256 _blockNumber) public {
       blockNumber = _blockNumber;
-      MockBlockNumber(blockNumber);
+      emit MockBlockNumber(blockNumber);
   }
 
-  function getNow() internal constant returns (uint256) {
+  function getNow() view internal returns (uint256) {
       return mockedNow;
   }
 
   function setMockedNow(uint256 _mockedNow) public {
       mockedNow = _mockedNow;
-      MockNow(mockedNow);
+      emit MockNow(mockedNow);
   }
 
 }

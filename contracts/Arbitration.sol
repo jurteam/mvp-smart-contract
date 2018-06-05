@@ -326,7 +326,7 @@ contract Arbitration {
     emit ContractDisputeDispersalAmended(msg.sender, _dispersal);
   }
 
-  function calcDisputeEnds() public view hasState(State.Dispute) returns(uint256) {
+  function calcDisputeEnds() public hasState(State.Dispute) returns(uint256) {
     //Extend dispute period if:
     //  - vote is tied
     //  - more than 5% of votes places in last 30 minutes of dispute period
@@ -435,7 +435,7 @@ contract Arbitration {
       }
     }
     assert(jurToken.transfer(msg.sender, eligableVotes.mul(reward)));
-    VoterPayout(msg.sender, eligableVotes.mul(reward));
+    emit VoterPayout(msg.sender, eligableVotes.mul(reward));
   }
 
   function getWinner() public view returns(address) {
@@ -476,7 +476,7 @@ contract Arbitration {
     address winnerParty = getWinner();
     uint256 payout = disputeDispersal[winnerParty][msg.sender];
     assert(jurToken.transfer(msg.sender, payout));
-    PartyPayout(msg.sender, payout);
+    emit PartyPayout(msg.sender, payout);
   }
 
   function getNow() internal constant returns (uint256) {
