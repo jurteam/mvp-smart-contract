@@ -1,9 +1,9 @@
 pragma solidity ^0.4.23;
 
-import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
-import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
-import './Arbitration.sol';
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./Arbitration.sol";
 
 contract ArbitrationFactory is Ownable {
 

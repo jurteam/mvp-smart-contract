@@ -1,8 +1,8 @@
 pragma solidity ^0.4.23;
 
-import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
-import 'openzeppelin-solidity/contracts/math/Math.sol';
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/math/Math.sol";
 
 contract Arbitration {
   using SafeMath for uint256;

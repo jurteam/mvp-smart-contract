@@ -1,10 +1,10 @@
 pragma solidity ^0.4.23;
 
-import 'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol';
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
-import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
-import './ArbitrationMock.sol';
-import '../ArbitrationFactory.sol';
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./ArbitrationMock.sol";
+import "../ArbitrationFactory.sol";
 
 contract ArbitrationFactoryMock is ArbitrationFactory {
 
