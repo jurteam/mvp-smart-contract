@@ -2,7 +2,7 @@
 
 ## Specification
 
-See [JUR Protocol Specification]('JUR Protocol Specification.md')
+See [JUR Protocol Specification](https://github.com/jurteam/mvp-smart-contract/blob/master/JUR%20Protocol%20Specification.md)
 
 ## Dependencies
 
