@@ -7,12 +7,22 @@ contract JURToken is MintableToken {
 
   mapping (bytes4 => bool) allowedFunctions;
 
+
+  /**
+   * @dev Constructor
+   * @param _allowedFunctions List of functions which are allowed with approve and call
+   */
   constructor(bytes4[] _allowedFunctions) public {
     for (uint8 i = 0; i < _allowedFunctions.length; i++) {
       allowedFunctions[_allowedFunctions[i]] = true;
     }
   }
 
+  /**
+   * @dev Adds / removes functions from list of functions which are allowed with approve and call
+   * @param _sig Signature of function to add / remove
+   * @param _valid Whether the function should be added or removed
+   */
   function setAllowedFunction(bytes4 _sig, bool _valid) onlyOwner public {
     allowedFunctions[_sig] = _valid;
   }
@@ -22,15 +32,24 @@ contract JURToken is MintableToken {
   // start from the end (the LSB) and work back towwards the 16th byte (ie we
   // ignore the first 4 bytes AND the zero padding) creating a uint that can be
   // converted to an address.
-  function getAddr(bytes data) internal pure returns (address) {
+
+  /**
+   * @notice Adds / removes functions from list of functions which are allowed with approve and call
+   * @param _data List of functions which are allowed with approve and call
+   */
+  function getAddr(bytes _data) internal pure returns(address) {
     uint result = 0;
     for (uint i = 35; i != 15; --i) {
-      result += uint(data[i]) * (16 ** ((35 - i) * 2));
+      result += uint(_data[i]) * (16 ** ((35 - i) * 2));
     }
     return address(result);
   }
 
-  function getSig(bytes _data) internal pure returns (bytes4 sig) {
+  /**
+   * @notice Returns function signature from msg.data
+   * @param _data msg.data from which to calculate function signature
+   */
+  function getSig(bytes _data) internal pure returns(bytes4 sig) {
       uint len = _data.length < 4 ? _data.length : 4;
       for (uint i = 0; i < len; i++) {
           sig = bytes4(uint(sig) + uint(_data[i]) * (2 ** (8 * (len - 1 - i))));

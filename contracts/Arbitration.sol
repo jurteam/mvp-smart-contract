@@ -22,9 +22,9 @@ contract Arbitration {
 
   event DisputeEndsAdjusted(uint256 _oldDisputeEnds, uint256 _newDisputeEnds);
 
-  event VoteCast(address _voter, address _party, uint256 _amount);
-  event VoterPayout(address _voter, uint256 _tokenAmount);
-  event PartyPayout(address _party, uint256 _tokenAmount);
+  event VoteCast(address indexed _voter, address indexed _party, uint256 _amount);
+  event VoterPayout(address indexed _voter, uint256 _stakedAmount, uint256 _rewardAmount);
+  event PartyPayout(address indexed _party, uint256 _dispersalAmount);
 
   //Token for escrow & voting
   ERC20 public jurToken;
@@ -35,7 +35,8 @@ contract Arbitration {
   uint256 public DISPUTE_WINDOW = 30 minutes;
   uint256 public DISPUTE_EXTENSION = 30 minutes;
   uint256 public DISPUTE_WINDOW_MAX = 5 * 10**16; //percentage multiplued by 10**16
-  uint256 public MIN_VOTE = 1 * 10**16; //percentage multiplued by 10**16
+  uint256 public MIN_VOTE = 1 * 10**16; //percentage multiplied by 10**16
+  uint256 public MIN_WIN = 1 * 10**16; //percentage multiplied by 10**16
 
   //Agreement Details
   address[] public allParties;
@@ -73,6 +74,9 @@ contract Arbitration {
   enum State {Unsigned, Signed, Agreed, Dispute, Closed, DisputeClosed}
   State public state = State.Unsigned;
 
+  //Accuracy for division
+  uint256 constant ACCURACY = 10 ** 18;
+
   modifier onlyParties {
     require(parties[msg.sender]);
     _;
@@ -93,6 +97,14 @@ contract Arbitration {
     _;
   }
 
+  /**
+   * @dev Constructor
+   * @param _jurToken Address of the JUR token
+   * @param _parties Addresses of parties involved in arbitration
+   * @param _dispersal Dispersal of funds if arbitration agreed
+   * @param _funding Source of funds for arbitration
+   * @param _agreementHash Hash of arbitration agreement
+   */
   constructor(address _jurToken, address[] _parties, uint256[] _dispersal, uint256[] _funding, bytes32 _agreementHash) public {
 
     //Check that we are only setting up an arbitration between two parties
@@ -127,10 +139,18 @@ contract Arbitration {
   }
 
   //Functions to sign and unsign contract
+
+  /**
+   * @dev Allows sender to sign agreeement
+   */
   function sign() public {
     _sign(msg.sender);
   }
 
+  /**
+   * @dev Allows sender to sign agreeement using approve and call
+   * @param _sender Address of signing party
+   */
   function signJUR(address _sender) public onlyJUR {
     _sign(_sender);
   }
@@ -149,6 +169,9 @@ contract Arbitration {
     emit ContractSigned(_sender, funding[_sender]);
   }
 
+  /**
+   * @dev Allows sender to unsign agreeement
+   */
   function unsign() public hasState(State.Unsigned) onlyParties {
     require(hasSigned[msg.sender]);
     hasSigned[msg.sender] = false;
@@ -157,6 +180,10 @@ contract Arbitration {
   }
 
   //Functions to agree / unagree contract
+
+  /**
+   * @dev Allows sender to agree dispersals (so that funds can be dispursed)
+   */
   function agree() public hasState(State.Signed) onlyParties {
     require(!hasAgreed[msg.sender]);
     hasAgreed[msg.sender] = true;
@@ -170,6 +197,9 @@ contract Arbitration {
     emit ContractAgreed(msg.sender);
   }
 
+  /**
+   * @dev Allows sender to unagree dispersals (so that funds cannot be dispursed)
+   */
   function unagree() public hasState(State.Signed) onlyParties {
     require(hasAgreed[msg.sender]);
     hasAgreed[msg.sender] = false;
@@ -177,10 +207,24 @@ contract Arbitration {
   }
 
   //Functions to propose a new dispersals / funding
+
+  /**
+   * @dev Allows sender to propose a new dispersal and agreement hash
+   * @param _dispersal Dispersal of funds if arbitration agreed
+   * @param _funding Source of funds for arbitration
+   * @param _agreementHash Hash of arbitration agreement
+   */
   function proposeAmendment(uint256[] _dispersal, uint256[] _funding, bytes32 _agreementHash) public {
     _proposeAmendment(msg.sender, _dispersal, _funding, _agreementHash);
   }
 
+  /**
+   * @dev Allows sender to propose a new dispersal and agreement hash using approve and call
+   * @param _sender Address of amending party
+   * @param _dispersal Dispersal of funds if arbitration agreed
+   * @param _funding Source of funds for arbitration
+   * @param _agreementHash Hash of arbitration agreement
+   */
   function proposeAmendmentJUR(address _sender, uint256[] _dispersal, uint256[] _funding, bytes32 _agreementHash) public onlyJUR {
     _proposeAmendment(_sender, _dispersal, _funding, _agreementHash);
   }
@@ -206,10 +250,18 @@ contract Arbitration {
   }
 
   //Functions to agree or unagree a new amendment
+
+  /**
+   * @dev Allows sender to agree an amendment to dispersals and agreement hash
+   */
   function agreeAmendment() public {
     _agreeAmendment(msg.sender);
   }
 
+  /**
+   * @dev Allows sender to agree an amendment to dispersals and agreement hash using approve and call
+   * @param _sender Address of amendment agreeing party
+   */
   function agreeAmendmentJUR(address _sender) public onlyJUR {
     _agreeAmendment(_sender);
   }
@@ -244,6 +296,9 @@ contract Arbitration {
 
   }
 
+  /**
+   * @dev Allows sender to unagree an amendment to dispersals and agreement hash
+   */
   function unagreeAmendment() public hasState(State.Signed) onlyParties {
     //Could be done by original proposer, or other party
     //If anyone disagrees, amendment is removed
@@ -262,7 +317,9 @@ contract Arbitration {
     emit ContractAmendmentUnagreed(msg.sender);
   }
 
-  //Once a contract has been agreed allow withdrawals of escrowed amounts
+  /**
+   * @dev Once a contract has been agreed withdrawals dispersal amount
+   */
   function withdrawDispersal() public hasState(State.Agreed) onlyParties {
     require(!hasWithdrawn[msg.sender]);
     hasWithdrawn[msg.sender] = true;
@@ -278,10 +335,22 @@ contract Arbitration {
   }
 
   //Functions to initiate a dispute
+
+  /**
+   * @dev Allows sender to put the arbitration into a dispute State
+   * @param _voteAmount Amount of tokens to stake to the disputing parties side
+   * @param _dispersal Dispersal should the disputing party win
+   */
   function dispute(uint256 _voteAmount, uint256[] _dispersal) public {
     _dispute(msg.sender, _voteAmount, _dispersal);
   }
 
+  /**
+   * @dev Allows sender to put the arbitration into a dispute State using approve and call
+   * @param _sender Address of disputing party
+   * @param _voteAmount Amount of tokens to stake to the disputing parties side
+   * @param _dispersal Dispersal should the disputing party win
+   */
   function disputeJUR(address _sender, uint256 _voteAmount, uint256[] _dispersal) public onlyJUR {
     _dispute(_sender, _voteAmount, _dispersal);
   }
@@ -300,18 +369,25 @@ contract Arbitration {
     require(_voteAmount >= totalFunding.mul(MIN_VOTE).div(10**18));
     disputeStarts = SafeMath.add(getNow(), DISPUTE_DISPERSAL_DURATION);
     disputeEnds = SafeMath.add(disputeStarts, DISPUTE_VOTE_DURATION);
-    totalVotes = _voteAmount;
     //Default other parties dispute dispersals
     for (uint8 j = 0; j < allParties.length; j++) {
       if (allParties[j] != _sender) {
         disputeDispersal[allParties[j]][allParties[j]] = totalFunding;
       }
     }
+    //Default reject option dispute dispersals
+    for (uint8 k = 0; k < allParties.length; k++) {
+      disputeDispersal[address(0)][allParties[k]] = funding[allParties[k]];
+    }
     emit ContractDisputed(_sender, _dispersal);
     //TODO - fix this
     _vote(_sender, _sender, _voteAmount);
   }
 
+  /**
+   * @dev Allows sender to amend their dispersals should they win
+   * @param _dispersal Dispersal should the disputing party win
+   */
   function amendDisputeDispersal(uint256[] _dispersal) public hasState(State.Dispute) onlyParties {
     require(_dispersal.length == allParties.length);
     require(getNow() < disputeStarts);
@@ -326,12 +402,15 @@ contract Arbitration {
     emit ContractDisputeDispersalAmended(msg.sender, _dispersal);
   }
 
+  /**
+   * @dev Calculates the current end time of the voting period
+   */
   function calcDisputeEnds() public hasState(State.Dispute) returns(uint256) {
     //Extend dispute period if:
     //  - vote is tied
     //  - more than 5% of votes places in last 30 minutes of dispute period
     if (getNow() < disputeEnds) {
-      return;
+      return disputeEnds;
     }
     if (disputeWindowVotes > totalVotes.mul(DISPUTE_WINDOW_MAX).div(10**18)) {
       disputeWindowVotes = 0;
@@ -361,10 +440,22 @@ contract Arbitration {
   }
 
   //Functions to allow voting on disputed agreements
+
+  /**
+   * @dev Allows sender to vote
+   * @param _voteAddress Address of party who is being voted for (0 for reject option)
+   * @param _voteAmount Amount of tokens to stake to the _voteAddress side
+   */
   function vote(address _voteAddress, uint256 _voteAmount) public {
     _vote(msg.sender, _voteAddress, _voteAmount);
   }
 
+  /**
+   * @dev Allows sender to vote using approve and call
+   * @param _sender Address of voting party
+   * @param _voteAddress Address of party who is being voted for (0 for reject option)
+   * @param _voteAmount Amount of tokens to stake to the _voteAddress side
+   */
   function voteJUR(address _sender, address _voteAddress, uint256 _voteAmount) public onlyJUR {
     _vote(_sender, _voteAddress, _voteAmount);
   }
@@ -380,7 +471,19 @@ contract Arbitration {
     require((getNow() >= disputeStarts) || parties[_sender]);
     //Check vote is for a valid address
     require(parties[_voteAddress] || (_voteAddress == address(0)));
+    //Vote must be at least MIN_VOTE of the totalVotes
     require(_voteAmount >= totalVotes.mul(MIN_VOTE).div(10**18));
+    //Vote must not mean the new winning party after the vote has strictly more than the next best party
+    if (totalVotes != 0) {
+      address winnerParty;
+      address bestMinortyParty;
+      (winnerParty, bestMinortyParty) = getWinnerAndBestMinorty();
+      if (_voteAddress == winnerParty) {
+        require(partyVotes[_voteAddress].add(_voteAmount) <=  partyVotes[bestMinortyParty].mul(2));
+      } else {
+        require(partyVotes[_voteAddress].add(_voteAmount) <=  partyVotes[winnerParty].mul(2));
+      }
+    }
 
     Vote memory newVote = Vote(_voteAmount, partyVotes[_voteAddress], false);
 
@@ -401,8 +504,13 @@ contract Arbitration {
 
   }
 
-  function payoutVoter(uint256 _start) public hasState(State.Dispute) {
-    //Generally setting _start to 0 should be fine, but having the option avoids a possible block gas limit issue
+  /**
+   * @dev Allows sender (voter) to claim their staked and reward tokens
+   * @param _start Index at which to start iterating through votes
+   * @param _end Index at which to end iterating through votes
+   */
+  function payoutVoter(uint256 _start, uint256 _end) public hasState(State.Dispute) {
+    //Generally setting _start to 0 and _end to a large number should be fine, but having the option avoids a possible block gas limit issue
     uint256 newDisputeEnds = calcDisputeEnds();
     if (newDisputeEnds != disputeEnds) {
       emit DisputeEndsAdjusted(newDisputeEnds, disputeEnds);
@@ -419,25 +527,31 @@ contract Arbitration {
     //If there were no votes on any minority options (all votes on the winner) then there is no payout
     uint256 reward = 0;
     if (totalMinorityVotes != 0) {
-      reward = totalMinorityVotes.mul(10**18).div(bestMinorityVotes);
+      reward = accuracyDiv(totalMinorityVotes, bestMinorityVotes);
     }
 
     uint256 eligableVotes = 0;
-    //TODO: does start really work here?
-    for (uint256 i = _start; i < userVotes[msg.sender][winnerParty].length; i++) {
+    uint256 stakedVotes = 0;
+
+    for (uint256 i = _start; i < Math.min256(userVotes[msg.sender][winnerParty].length, _end); i++) {
       if (!userVotes[msg.sender][winnerParty][i].claimed) {
+        stakedVotes = stakedVotes.add(userVotes[msg.sender][winnerParty][i].amount);
         if (userVotes[msg.sender][winnerParty][i].previousVotes >= bestMinorityVotes) {
-          //nothing left to pay out
-          break;
+          //nothing left to pay out in rewards, just mark as claimed
+          userVotes[msg.sender][winnerParty][i].claimed = true;
+        } else {
+          eligableVotes = eligableVotes.add(Math.min256(bestMinorityVotes.sub(userVotes[msg.sender][winnerParty][i].previousVotes), userVotes[msg.sender][winnerParty][i].amount));
+          userVotes[msg.sender][winnerParty][i].claimed = true;
         }
-        eligableVotes = eligableVotes.add(Math.min256(bestMinorityVotes.sub(userVotes[msg.sender][winnerParty][i].previousVotes), userVotes[msg.sender][winnerParty][i].amount));
-        userVotes[msg.sender][winnerParty][i].claimed = true;
       }
     }
-    assert(jurToken.transfer(msg.sender, eligableVotes.mul(reward)));
-    emit VoterPayout(msg.sender, eligableVotes.mul(reward));
+    require(jurToken.transfer(msg.sender, stakedVotes.add(eligableVotes.mul(reward).div(ACCURACY))));
+    emit VoterPayout(msg.sender, stakedVotes, eligableVotes.mul(reward).div(ACCURACY));
   }
 
+  /**
+   * @notice Returns the current winner
+   */
   function getWinner() public view returns(address) {
     uint256 winnerVotes = partyVotes[address(0)];
     address winnerParty = address(0);
@@ -450,6 +564,9 @@ contract Arbitration {
     return winnerParty;
   }
 
+  /**
+   * @notice Returns the current winner and next best minority party
+   */
   function getWinnerAndBestMinorty() public view returns(address, address) {
     address winnerParty = getWinner();
     address bestMinorityParty = (winnerParty == address(0)) ? allParties[0] : address(0);
@@ -463,6 +580,9 @@ contract Arbitration {
     return (winnerParty, bestMinorityParty);
   }
 
+  /**
+   * @dev Allows sender (party) to claim their dispersal tokens
+   */
   function payoutParty() public hasState(State.Dispute) onlyParties {
     //TODO: check that vote has actually ended
     uint256 newDisputeEnds = calcDisputeEnds();
@@ -475,10 +595,20 @@ contract Arbitration {
     hasWithdrawn[msg.sender] = true;
     address winnerParty = getWinner();
     uint256 payout = disputeDispersal[winnerParty][msg.sender];
-    assert(jurToken.transfer(msg.sender, payout));
+    require(jurToken.transfer(msg.sender, payout));
     emit PartyPayout(msg.sender, payout);
   }
 
+  /**
+   * @notice Returns division with accuracy of 10**18
+   */
+  function accuracyDiv(uint256 x, uint256 y) internal pure returns (uint256) {
+      return x.mul(ACCURACY).add(y.div(2)).div(y);
+  }
+
+  /**
+   * @notice Returns current timestamp
+   */
   function getNow() internal constant returns (uint256) {
     return now;
   }

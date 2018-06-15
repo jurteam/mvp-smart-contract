@@ -4,7 +4,7 @@ const ArbitrationFactory = artifacts.require("./ArbitrationFactoryMock.sol");
 const Arbitration = artifacts.require("./ArbitrationMock.sol");
 const JURToken = artifacts.require("./JURToken.sol");
 
-contract('Arbitration', function (accounts) {
+contract('Arbitration - no dispute', function (accounts) {
 
   var token;
   var arbitrationFactory;
@@ -20,9 +20,9 @@ contract('Arbitration', function (accounts) {
     console.log("JUR Token Address: ", token.address);
 
     //Mint some tokens for party1 and party2
-    token.mint(party1, 50, {from: accounts[0]});
-    token.mint(party2, 100, {from: accounts[0]});
-    token.mint(voter1, 100, {from: accounts[0]});
+    await token.mint(party1, 50, {from: accounts[0]});
+    await token.mint(party2, 100, {from: accounts[0]});
+    await token.mint(voter1, 100, {from: accounts[0]});
 
     //Initialise arbitration contract
     arbitrationFactory = await ArbitrationFactory.new(token.address, {from: accounts[0]});
@@ -109,7 +109,7 @@ contract('Arbitration', function (accounts) {
     assert.isTrue(finalBalance.sub(initialBalance).toNumber() == 0);
   });
 
-  it("13. party1 withdraws dispersal (150 tokens) - state is now Closed", async () => {
+  it("13. party2 withdraws dispersal (150 tokens) - state is now Closed", async () => {
     let initialBalance = await token.balanceOf(party2);
     await arbitration.withdrawDispersal({from: party2});
     let finalBalance = await token.balanceOf(party2);
