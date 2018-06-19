@@ -135,7 +135,17 @@ contract('Arbitration - Simple dispute', function (accounts) {
     });
   });
 
-  it("13. voters receive rewards", async () => {
+  it("13. voters and parties unable to withdraw in the first 24 hours", async () => {
+    await assertFail(async () => {
+      await arbitration.payoutVoter(0, 10, {from: voter1});
+    });
+    await assertFail(async () => {
+      await arbitration.payoutParty({from: party1});
+    });
+  });
+
+  it("14. voters receive rewards", async () => {
+    await arbitration.setMockedNow(9 * 24 * 60 * 60);
     let voter1Balance = await token.balanceOf(voter1);
     let voter2Balance = await token.balanceOf(voter2);
     let voter3Balance = await token.balanceOf(voter3);
@@ -153,7 +163,7 @@ contract('Arbitration - Simple dispute', function (accounts) {
     assert.equal(voter3FinalBalance.sub(voter3Balance).toNumber(), 50);
   });
 
-  it("14. parties receive payouts", async () => {
+  it("15. parties receive payouts", async () => {
     let party1Balance = await token.balanceOf(party1);
     let party2Balance = await token.balanceOf(party2);
     await arbitration.payoutParty({from: party1});

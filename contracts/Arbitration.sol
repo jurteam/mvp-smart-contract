@@ -34,6 +34,7 @@ contract Arbitration {
   uint256 public DISPUTE_DISPERSAL_DURATION = 1 days;
   uint256 public DISPUTE_WINDOW = 30 minutes;
   uint256 public DISPUTE_EXTENSION = 30 minutes;
+  uint256 public VOTE_LOCKUP = 24 hours; //amount of time users must wait to withdraw their tokens
   uint256 public DISPUTE_WINDOW_MAX = 5 * 10**16; //percentage multiplued by 10**16
   uint256 public MIN_VOTE = 1 * 10**16; //percentage multiplied by 10**16
   uint256 public MIN_WIN = 1 * 10**16; //percentage multiplied by 10**16
@@ -516,7 +517,7 @@ contract Arbitration {
       emit DisputeEndsAdjusted(newDisputeEnds, disputeEnds);
       disputeEnds = newDisputeEnds;
     }
-    require(getNow() >= disputeEnds);
+    require(getNow() >= disputeEnds.add(VOTE_LOCKUP));
     //There should be a clear winner now, otherwise the dispute would have been extended.
     address winnerParty;
     address bestMinortyParty;
@@ -590,7 +591,7 @@ contract Arbitration {
       emit DisputeEndsAdjusted(newDisputeEnds, disputeEnds);
       disputeEnds = newDisputeEnds;
     }
-    require(getNow() >= disputeEnds);
+    require(getNow() >= disputeEnds.add(VOTE_LOCKUP));
     require(!hasWithdrawn[msg.sender]);
     hasWithdrawn[msg.sender] = true;
     address winnerParty = getWinner();

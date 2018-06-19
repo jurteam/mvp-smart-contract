@@ -208,7 +208,7 @@ contract('Arbitration - Approve and call', function (accounts) {
   });
 
   it("11. dispute ends, no more voting possible", async () => {
-    await arbitration.setMockedNow(8 * 24 * 60 * 60);
+    await arbitration.setMockedNow(9 * 24 * 60 * 60);
     await assertFail(async () => {
       await arbitration.vote(party1, 1, {from: voter2});
     });

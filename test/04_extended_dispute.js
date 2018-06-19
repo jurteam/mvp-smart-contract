@@ -144,7 +144,7 @@ contract('Arbitration - Tied dispute', function (accounts) {
   });
 
   it("13. voters receive rewards", async () => {
-    await arbitration.setMockedNow((8 * 24 * 60 * 60) + (30 * 60));
+    await arbitration.setMockedNow((9 * 24 * 60 * 60) + (30 * 60));
     let voter1Balance = await token.balanceOf(voter1);
     let voter2Balance = await token.balanceOf(voter2);
     let voter3Balance = await token.balanceOf(voter3);
