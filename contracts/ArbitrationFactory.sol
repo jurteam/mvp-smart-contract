@@ -45,7 +45,7 @@ contract ArbitrationFactory is Ownable {
    * @notice Returns the hash of an agreement string
    */
   function generateHash(string _input) pure public returns (bytes32) {
-    return keccak256(_input);
+    return keccak256(bytes(_input));
   }
 
 }
