@@ -591,7 +591,7 @@ contract Arbitration {
       emit DisputeEndsAdjusted(newDisputeEnds, disputeEnds);
       disputeEnds = newDisputeEnds;
     }
-    require(getNow() >= disputeEnds.add(VOTE_LOCKUP));
+    require(getNow() >= disputeEnds);
     require(!hasWithdrawn[msg.sender]);
     hasWithdrawn[msg.sender] = true;
     address winnerParty = getWinner();
