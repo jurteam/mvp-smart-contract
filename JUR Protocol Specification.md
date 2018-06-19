@@ -106,7 +106,7 @@ Once both parties have provided a Dispute Dispersal (either explicitly within 24
 
 In addition to the above, when a party puts the JAC into a dispute state, they must additional vote on their own Dispute Dispersal. They can determine how much, or how little to vote, but the vote must be at least 1% of the Escrowed Funds.
 
-## Dispute Resolution
+## Dispute Resolution
 
 Once a JAC enters a Dispute state, JUR token holders will vote on one of three options:
 
@@ -118,7 +118,7 @@ Once a JAC enters a Dispute state, JUR token holders will vote on one of three o
 
 If either of the first two options ends up with a majority of votes, the JAC will disperse funds according to the respective Dispute Dispersal. If the Reject option ends up with the majority vote, then the JAC will disperse funds back in to Party A and Party B in amounts that match the Escrowed Funds (so Party A will receive `fundingA` and Party B will receive `fundingB`).
 
-## Voting Process
+## Voting Process
 
 In the following sections, a vote is defined to be a JUR token staked to the JAC contract, and associated with one of the three above options. For example, if a voter stakes 20 JUR tokens to the Reject option, they are considered to have placed 20 votes on the Reject option.
 
