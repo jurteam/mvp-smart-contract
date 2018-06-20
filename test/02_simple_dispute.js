@@ -139,9 +139,6 @@ contract('Arbitration - Simple dispute', function (accounts) {
     await assertFail(async () => {
       await arbitration.payoutVoter(0, 10, {from: voter1});
     });
-    await assertFail(async () => {
-      await arbitration.payoutParty({from: party1});
-    });
   });
 
   it("14. voters receive rewards", async () => {
