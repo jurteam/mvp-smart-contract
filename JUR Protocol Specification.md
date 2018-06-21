@@ -1,4 +1,4 @@
-# Jury Smart Contract Specification
+# Jur Smart Contract Specification
 
 ## Introduction
 
@@ -6,9 +6,9 @@ Jur A.G. intends to introduce JUR, an ERC20 compliant token on the Ethereum bloc
 
 The JUR token will be used:  
 
-  - as the currency in which escrow is denominated in a Jury Agreement Contract.  
+  - as the currency in which escrow is denominated in a Jur Agreement Contract.  
 
-  - to provide utility to resolve disputes, should they arise, in any Jury Agreement Contracts.
+  - to provide utility to resolve disputes, should they arise, in any Jur Agreement Contracts.
 
 ## Use Case
 
@@ -18,7 +18,7 @@ However, for many real life cases, it is not possible to codify (within a Turing
 
 For example, suppose that Alice wishes to purchase a copywriting service from Bob, to write three articles on her new product. She agrees to pay 100 JUR tokens per article, on completion of all three articles, so 300 JUR tokens in total.
 
-Alice and Bob would create a Jury Agreement Contract (JAC), attach the above agreement to the contract, and Alice would deposit 300 JUR tokens into the JAC, to be held in escrow until Bob completes the assignment.
+Alice and Bob would create a Jur Agreement Contract (JAC), attach the above agreement to the contract, and Alice would deposit 300 JUR tokens into the JAC, to be held in escrow until Bob completes the assignment.
 
 There are then three possible outcomes:
 
@@ -28,9 +28,9 @@ There are then three possible outcomes:
 
 3. *Dispute resolved by JUR token holders:* Again, Bob is only able to deliver a single article. In this scenario Alice is upset as she feels her time has been wasted, and only wants to pay Bob 50 JUR tokens for his services for the single article. Bob does not accept this proposal as he feels he should be paid 100 JUR tokens. Since they cannot agree, the JAC enters a dispute state, and any JUR token holders (including Bob & Alice) can vote on whose proposal they feel is most just. If Alice's proposal ends up with a majority of votes at the end of the voting period, then the JAC respects this proposal and refunds her 250 JUR tokens, and disperses 50 JUR tokens to Bob. Conversely if Bob's proposal receives a majority of votes the JAC will refund Alice 200 JUR tokens, and disperse 100 JUR tokens to Bob.
 
-## Initialising the Jury Agreement Contract
+## Initialising the Jur Agreement Contract
 
-In order to initialise a Jury Agreement Contract, two parties (Party A and Party B) must agree on the following state:
+In order to initialise a Jur Agreement Contract, two parties (Party A and Party B) must agree on the following state:
 
   - Party A (encoded as an Ethereum address)
   - Party B (encoded as an Ethereum address)
@@ -49,7 +49,7 @@ At any time, following initialisation, if both parties sign off, the JAC will re
 
 ## Changing the Dispersal
 
-At any time, following the initialisation of a Jury Agreement Contract, either party can propose a Amended Dispersal, encoded as a pair `[amended_disperseA, amended_disperseB]`.
+At any time, following the initialisation of a Jur Agreement Contract, either party can propose a Amended Dispersal, encoded as a pair `[amended_disperseA, amended_disperseB]`.
 
 Alongside the proposed Amended Dispersal, the party proposing the Amended Dispersal must also submit a proposed Amended Escrowed Funds, encoded as a pair `[amended_fundedA, amended_fundingB]`. This is to account for any possible excess or deficit in the current Escrowed Funds held by the JAC relative to the new Amended Dispersal.
 
@@ -79,7 +79,7 @@ This process maintains JAC invariant of:
 
 ## Entering into a Dispute
 
-At any time, following the initialisation of a Jury Agreement Contract, either party can unilaterally move the JAC into a Dispute state.
+At any time, following the initialisation of a Jur Agreement Contract, either party can unilaterally move the JAC into a Dispute state.
 
 To move a JAC into a Dispute state, the disputing party must provide a Dispute Dispersal. This Dispute Dispersal will be respected by the JAC if the disputer wins a majority of votes.
 
@@ -214,9 +214,9 @@ In order to reduce attack surfaces, the contract should:
 
   - use pull rather than push for all dispersals.
 
-  - employ a factory contract to deploy all Jury Agreement Contracts.
+  - employ a factory contract to deploy all Jur Agreement Contracts.
 
-NB - this section does not consider game theoretic attacks on the Jury Agreement Contracts.
+NB - this section does not consider game theoretic attacks on the Jur Agreement Contracts.
 
 ## Questions
 
