@@ -138,7 +138,7 @@ contract('Arbitration - Tied dispute', function (accounts) {
     });
   });
 
-  it("12. voters receive rewards", async () => {
+  it("13. voters receive rewards", async () => {
     let voter1Balance = await token.balanceOf(voter1);
     let voter2Balance = await token.balanceOf(voter2);
     let voter3Balance = await token.balanceOf(voter3);

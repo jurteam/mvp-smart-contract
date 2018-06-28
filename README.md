@@ -121,7 +121,7 @@ Arbitration Address: 0x4cd198d5d2c81a00fe1960fd6b8137fc39e7613a
     ✓ 10. vote is extended due to a tie (113ms)
     ✓ 11. additional votes placed (under 5%) (226ms)
     ✓ 12. dispute ends, no more voting possible (119ms)
-    ✓ 12. voters receive rewards (508ms)
+    ✓ 13. voters receive rewards (508ms)
     ✓ 14. parties receive payouts (572ms)
 
   Contract: Arbitration - Tied dispute
