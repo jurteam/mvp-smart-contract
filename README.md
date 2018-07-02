@@ -4,6 +4,31 @@
 
 See [JUR Protocol Specification](https://github.com/jurteam/mvp-smart-contract/blob/master/JUR%20Protocol%20Specification.md)
 
+## Events
+
+Events can be monitored via the web3 API to allow the dApp to react to changes within the smart contract(s).
+
+Supported events are:
+```
+Arbitration.sol:  event StateChange(State _oldState, State _newState, uint256 _timestamp);
+Arbitration.sol:  event ContractCreated(address indexed _party1, address indexed _party2, uint256[] _dispersal, uint256[] _funding, bytes32 _agreementHash);
+Arbitration.sol:  event ContractSigned(address indexed _party, uint256 _funding);
+Arbitration.sol:  event ContractUnsigned(address indexed _party, uint256 _funding);
+Arbitration.sol:  event ContractAgreed(address indexed _party);
+Arbitration.sol:  event ContractUnagreed(address indexed _party);
+Arbitration.sol:  event ContractAmendmentProposed(address indexed _party, uint256[] _dispersal, uint256[] _funding, bytes32 _agreementHash);
+Arbitration.sol:  event ContractAmendmentAgreed(address indexed _party);
+Arbitration.sol:  event ContractAmendmentUnagreed(address indexed _party);
+Arbitration.sol:  event ContractWithdrawn(address indexed _party, uint256 _dispersal);
+Arbitration.sol:  event ContractDisputed(address indexed _party, uint256[] _dispersal);
+Arbitration.sol:  event ContractDisputeDispersalAmended(address indexed _party, uint256[] _dispersal);
+Arbitration.sol:  event DisputeEndsAdjusted(uint256 _oldDisputeEnds, uint256 _newDisputeEnds);
+Arbitration.sol:  event VoteCast(address indexed _voter, address indexed _party, uint256 _amount);
+Arbitration.sol:  event VoterPayout(address indexed _voter, uint256 _stakedAmount, uint256 _rewardAmount);
+Arbitration.sol:  event PartyPayout(address indexed _party, uint256 _dispersalAmount);
+ArbitrationFactory.sol:  event ArbitrationCreated(address indexed _creator, address _arbitration, address indexed _party1, address indexed _party2, uint256[] _dispersal, uint256[] _funding, bytes32 _agreementHash);
+```
+
 ## Dependencies
 
 1. This repo uses truffle, node and npm:  
