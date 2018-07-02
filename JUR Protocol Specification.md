@@ -138,7 +138,7 @@ The rules governing the voting process are:
 
     - there is no option with a clear majority.
 
-  - a clear majority is considered to be when one single option has 0.1 votes or more, than any other option.
+  - a clear majority is considered to be when one single option has more than any other option.
 
 ## Rewarding Voters
 
@@ -166,7 +166,7 @@ At the end of the Voting Period, we define:
 
   Let `sum_votes_majority` be the sum of all votes placed on `majority_option`.
 
-  Let `reward_multiplier` be `sum_votes_all_minority / (sum_votes_best_minority + 0.1)`.
+  Let `reward_multiplier` be `sum_votes_all_minority / (sum_votes_best_minority)`.
 
 For our specific majority option voter we define:
 
@@ -176,11 +176,11 @@ For our specific majority option voter we define:
 
 Then, our voter is rewarded as follows:
 
-If `user_start_votes_majority + user_votes_majority <= sum_votes_best_minority + 0.1` then the voter receives `user_votes_majority * reward_multiplier`.
+If `user_start_votes_majority + user_votes_majority <= sum_votes_best_minority` then the voter receives `user_votes_majority * reward_multiplier`.
 
-If `user_start_votes_majority >= sum_votes_best_minority + 0.1` then the voter receives no reward.
+If `user_start_votes_majority >= sum_votes_best_minority` then the voter receives no reward.
 
-If `user_start_votes_majority < sum_votes_best_minority + 0.1` and `user_start_votes_majority + user_votes_majority >= sum_votes_best_minority + 0.1` then the voter receives `(sum_votes_best_minority + 0.1) - user_start_votes_majority) * reward_multiplier`.
+If `user_start_votes_majority < sum_votes_best_minority` and `user_start_votes_majority + user_votes_majority >= sum_votes_best_minority` then the voter receives `(sum_votes_best_minority) - user_start_votes_majority) * reward_multiplier`.
 
 In all cases, the voter receives back all of their voted tokens, plus any additional reward calculated as above.
 
@@ -217,7 +217,3 @@ In order to reduce attack surfaces, the contract should:
   - employ a factory contract to deploy all Jur Agreement Contracts.
 
 NB - this section does not consider game theoretic attacks on the Jur Agreement Contracts.
-
-## Questions
-
-  - Is there a game theoretic reason to insist that votes are won by at least 0.1 votes? Given the requirement that each new vote must be at least 1% of the existing votes, I'm not clear what this adds (and it does complicate the reward calculation).
