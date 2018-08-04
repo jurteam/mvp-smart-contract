@@ -1,7 +1,7 @@
 # Audit Response - 4th August 2018
 
 All fixes are included in the commit:  
-
+https://github.com/jurteam/mvp-smart-contract/commit/c98aa7032a3b38d000c09cffb0d31462840c5765
 
 ## 2.1 - Timestamp Dependence
 
