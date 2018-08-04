@@ -130,6 +130,8 @@ The rules governing the voting process are:
 
   - any new voter must stake at least 1% of the total amount of votes accrued during the voting process so far.
 
+  - following a vote being cast, the winning party can have at most twice as many votes as the next best party, otherwise the vote is rejected.
+
   - the Voting Period lasts 24 hours from the Dispute Dispersals being finalised, unless extended.
 
   - the Voting Period is extended if, at the end of the Voting Period, either of the following is true. In both cases, the Voting Period is extended by a further 30 minutes, after which this logic is reapplied recursively:

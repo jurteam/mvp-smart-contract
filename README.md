@@ -129,6 +129,27 @@ Arbitration Address: 0x3804475d74a3b5261b34d3c8f31af30055058466
     ✓ 17. party1 withdraws dispersal (zero tokens) (112ms)
     ✓ 18. party2 withdraws dispersal (180 tokens) - state is now Closed (165ms)
 
+  Contract: Arbitration - Refunded Amendment
+JUR Token Address:  0x526dd75f0645fb6c071656b92c13e169214fe124
+Arbitration Factory Address:  0x8fc1b1def5f7fef63e9bb4b33ac77b02b76a4a6f
+    ✓ 0. initialize token contract and arbitration factory contract (366ms)
+Arbitration Address: 0x794d28d7ae66a334ec589dd8dc25de9d8a43b412
+    ✓ 1. create new arbitration - state is unsigned (166ms)
+    ✓ 2. approve arbitration for transfers (120ms)
+    ✓ 3. only parties can sign arbitration
+    ✓ 4. party1 signs arbitration (60ms)
+    ✓ 5. party1 unsigns arbitration (45ms)
+    ✓ 6. party1 resigns arbitration (91ms)
+    ✓ 7. party2 signs arbitration - state is now Signed (85ms)
+    ✓ 8. party2 proposes amendment (74ms)
+    ✓ 9. party1 agrees amendment (262ms)
+    ✓ 10. party1 proposes amendment without authorising additional funding - fail (73ms)
+    ✓ 11. party1 proposes amendment with authorised additional amendedFunding (234ms)
+    ✓ 15. party1 agrees arbitration - party1 is refunded amendement funds (122ms)
+    ✓ 16. party2 agrees arbitration - state is now Agreed (73ms)
+    ✓ 17. party1 withdraws dispersal (twenty tokens) (101ms)
+    ✓ 18. party2 withdraws dispersal (80 tokens) - state is now Closed (156ms)
+
   Contract: Arbitration - Tied dispute
 JUR Token Address:  0x1f37801d4db18b6a4cb6a65eced53ccb63ab764e
 Arbitration Factory Address:  0x738f23b326d12610a6374de0a12e3f5ce6b9eeca

@@ -72,11 +72,11 @@ contract Arbitration {
   }
 
   //Initialise state
-  enum State {Unsigned, Signed, Agreed, Dispute, Closed, DisputeClosed}
+  enum State {Unsigned, Signed, Agreed, Dispute, Closed}
   State public state = State.Unsigned;
 
-  //Accuracy for division
-  uint256 constant ACCURACY = 10 ** 18;
+  //Decimals used for voting token
+  uint256 constant DECIMALS = 10 ** 18;
 
   modifier onlyParties {
     require(parties[msg.sender]);
@@ -188,6 +188,10 @@ contract Arbitration {
   function agree() public hasState(State.Signed) onlyParties {
     require(!hasAgreed[msg.sender]);
     hasAgreed[msg.sender] = true;
+    // If there is an amendment proposed, but not agreed refund all amendment funds
+    if (amendmentProposed) {
+      unagreeAmendment();
+    }
     bool allAgreed = true;
     for (uint8 i = 0; i < allParties.length; i++) {
       allAgreed = allAgreed && hasAgreed[allParties[i]];
@@ -275,11 +279,11 @@ contract Arbitration {
       uint256 deficit = amendedFunding[_sender].sub(funding[_sender]);
       require(jurToken.transferFrom(_sender, address(this), deficit));
     }
+    emit ContractAmendmentAgreed(_sender);
     bool allFundedAmendment = true;
     for (uint8 i = 0; i < allParties.length; i++) {
       allFundedAmendment = allFundedAmendment && hasFundedAmendment[allParties[i]];
     }
-    emit ContractAmendmentAgreed(_sender);
     // If all parties have funded / agreed an amendment, refund any excess and reset proposals
     if (allFundedAmendment) {
       amendmentProposed = false;
@@ -358,6 +362,10 @@ contract Arbitration {
 
   function _dispute(address _sender, uint256 _voteAmount, uint256[] _dispersal) internal hasState(State.Signed) isParty(_sender) {
     require(_dispersal.length == allParties.length);
+    // If there is an amendment proposed, but not agreed refund all amendment funds
+    if (amendmentProposed) {
+      unagreeAmendment();
+    }
     setState(State.Dispute);
     uint256 totalDispersal = 0;
     uint256 totalFunding = 0;
@@ -381,7 +389,6 @@ contract Arbitration {
       disputeDispersal[address(0)][allParties[k]] = funding[allParties[k]];
     }
     emit ContractDisputed(_sender, _dispersal);
-    //TODO - fix this
     _vote(_sender, _sender, _voteAmount);
   }
 
@@ -474,7 +481,7 @@ contract Arbitration {
     require(parties[_voteAddress] || (_voteAddress == address(0)));
     //Vote must be at least MIN_VOTE of the totalVotes
     require(_voteAmount >= totalVotes.mul(MIN_VOTE).div(10**18));
-    //Vote must not mean the new winning party after the vote has strictly more than the next best party
+    //Vote must not mean the new winning party after the vote has strictly more than twice the next best party
     if (totalVotes != 0) {
       address winnerParty;
       address bestMinortyParty;
@@ -528,7 +535,7 @@ contract Arbitration {
     //If there were no votes on any minority options (all votes on the winner) then there is no payout
     uint256 reward = 0;
     if (totalMinorityVotes != 0) {
-      reward = accuracyDiv(totalMinorityVotes, bestMinorityVotes);
+      reward = decimalDiv(totalMinorityVotes, bestMinorityVotes);
     }
 
     uint256 eligableVotes = 0;
@@ -536,18 +543,15 @@ contract Arbitration {
 
     for (uint256 i = _start; i < Math.min256(userVotes[msg.sender][winnerParty].length, _end); i++) {
       if (!userVotes[msg.sender][winnerParty][i].claimed) {
+        userVotes[msg.sender][winnerParty][i].claimed = true;
         stakedVotes = stakedVotes.add(userVotes[msg.sender][winnerParty][i].amount);
-        if (userVotes[msg.sender][winnerParty][i].previousVotes >= bestMinorityVotes) {
-          //nothing left to pay out in rewards, just mark as claimed
-          userVotes[msg.sender][winnerParty][i].claimed = true;
-        } else {
+        if (userVotes[msg.sender][winnerParty][i].previousVotes < bestMinorityVotes) {
           eligableVotes = eligableVotes.add(Math.min256(bestMinorityVotes.sub(userVotes[msg.sender][winnerParty][i].previousVotes), userVotes[msg.sender][winnerParty][i].amount));
-          userVotes[msg.sender][winnerParty][i].claimed = true;
         }
       }
     }
-    require(jurToken.transfer(msg.sender, stakedVotes.add(eligableVotes.mul(reward).div(ACCURACY))));
-    emit VoterPayout(msg.sender, stakedVotes, eligableVotes.mul(reward).div(ACCURACY));
+    require(jurToken.transfer(msg.sender, stakedVotes.add(decimalMul(eligableVotes, reward))));
+    emit VoterPayout(msg.sender, stakedVotes, decimalMul(eligableVotes, reward));
   }
 
   /**
@@ -585,7 +589,6 @@ contract Arbitration {
    * @dev Allows sender (party) to claim their dispersal tokens
    */
   function payoutParty() public hasState(State.Dispute) onlyParties {
-    //TODO: check that vote has actually ended
     uint256 newDisputeEnds = calcDisputeEnds();
     if (newDisputeEnds != disputeEnds) {
       emit DisputeEndsAdjusted(newDisputeEnds, disputeEnds);
@@ -601,10 +604,17 @@ contract Arbitration {
   }
 
   /**
-   * @notice Returns division with accuracy of 10**18
+   * @notice Returns division assuming both inputs are decimals multiplied by DECIMALS
    */
-  function accuracyDiv(uint256 x, uint256 y) internal pure returns (uint256) {
-      return x.mul(ACCURACY).add(y.div(2)).div(y);
+  function decimalDiv(uint256 x, uint256 y) internal pure returns (uint256) {
+    return x.mul(DECIMALS).add(y.div(2)).div(y);
+  }
+
+  /**
+   * @notice Returns multiplication assuming both inputs are decimals multiplied by DECIMALS
+   */
+  function decimalMul(uint256 x, uint256 y) internal pure returns (uint256) {
+    return x.mul(y).add(DECIMALS.div(2)).div(DECIMALS);
   }
 
   /**
