@@ -607,14 +607,14 @@ contract Arbitration {
    * @notice Returns division assuming both inputs are decimals multiplied by DECIMALS
    */
   function decimalDiv(uint256 x, uint256 y) internal pure returns (uint256) {
-    return x.mul(DECIMALS).add(y.div(2)).div(y);
+    return x.mul(DECIMALS).div(y);
   }
 
   /**
    * @notice Returns multiplication assuming both inputs are decimals multiplied by DECIMALS
    */
   function decimalMul(uint256 x, uint256 y) internal pure returns (uint256) {
-    return x.mul(y).add(DECIMALS.div(2)).div(DECIMALS);
+    return x.mul(y).div(DECIMALS);
   }
 
   /**
