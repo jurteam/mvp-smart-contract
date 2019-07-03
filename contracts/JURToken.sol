@@ -6,6 +6,9 @@ import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 contract JURToken is MintableToken {
 
   mapping (bytes4 => bool) allowedFunctions;
+  string public name = "JUR Token";
+  string public symbol = "JUR";
+  uint8 public decimals = 18;
 
 
   /**
@@ -16,6 +19,27 @@ contract JURToken is MintableToken {
     for (uint8 i = 0; i < _allowedFunctions.length; i++) {
       allowedFunctions[_allowedFunctions[i]] = true;
     }
+  }
+
+  /**
+   * @dev Override: function to mint tokens
+   * @param _to The address that will receive the minted tokens.
+   * @param _amount The amount of tokens to mint.
+   * @return A boolean that indicates if the operation was successful.
+   */
+  function mint(
+    address _to,
+    uint256 _amount
+  )
+    canMint
+    public
+    returns (bool)
+  {
+    totalSupply_ = totalSupply_.add(_amount);
+    balances[_to] = balances[_to].add(_amount);
+    emit Mint(_to, _amount);
+    emit Transfer(address(0), _to, _amount);
+    return true;
   }
 
   /**

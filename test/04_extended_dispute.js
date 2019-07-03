@@ -120,7 +120,8 @@ contract('Arbitration - Tied dispute', function (accounts) {
     await arbitration.setMockedNow((8 * 24 * 60 * 60) - 1);
     await arbitration.vote(party2, 10, {from: voter3});
     await arbitration.setMockedNow(8 * 24 * 60 * 60);
-    let endTime = await arbitration.calcDisputeEnds.call();
+    let data = await arbitration.calcDisputeEnds.call();
+    let endTime = data[0];
     assert.equal(endTime.toNumber(), (8 * 24 * 60 * 60) + (30 * 60));
     await arbitration.setMockedNow((8 * 24 * 60 * 60) + (5 * 60));
     //Party1 has 20 votes, Party2 has 40 votes

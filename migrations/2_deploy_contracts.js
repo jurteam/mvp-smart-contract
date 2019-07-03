@@ -76,8 +76,10 @@ let voteJURFunction = {
 };
 let voteJUR = web3.eth.abi.encodeFunctionSignature(voteJURFunction);
 
-module.exports = function (deployer, network, accounts) {
+console.log([signJUR, proposeAmendmentJUR, agreeAmendmentJUR, disputeJUR, voteJUR]);
 
+module.exports = function (deployer, network, accounts) {
+  console.log([signJUR, proposeAmendmentJUR, agreeAmendmentJUR, disputeJUR, voteJUR]);
   return deployer.deploy(JURToken, [signJUR, proposeAmendmentJUR, agreeAmendmentJUR, disputeJUR, voteJUR]).then(() => {
     return JURToken.deployed().then((jurToken) => {
       return deployer.deploy(ArbitrationFactory, JURToken.address);

@@ -118,7 +118,8 @@ contract('Arbitration - Tied dispute', function (accounts) {
 
   it("10. vote is extended due to a tie", async () => {
     await arbitration.setMockedNow(8 * 24 * 60 * 60);
-    let endTime = await arbitration.calcDisputeEnds.call();
+    let data = await arbitration.calcDisputeEnds.call();
+    let endTime = data[0];
     assert.equal(endTime.toNumber(), (8 * 24 * 60 * 60) + (30 * 60));
   });
 
