@@ -77,7 +77,7 @@ let voteJURFunction = {
 let voteJUR = web3.eth.abi.encodeFunctionSignature(voteJURFunction);
 
 console.log([signJUR, proposeAmendmentJUR, agreeAmendmentJUR, disputeJUR, voteJUR]);
-
+//['0x37c2afda','0x1ff2e214','0xfc763176','0xadef40db','0x64a8a11f']
 module.exports = function (deployer, network, accounts) {
   console.log([signJUR, proposeAmendmentJUR, agreeAmendmentJUR, disputeJUR, voteJUR]);
   return deployer.deploy(JURToken, [signJUR, proposeAmendmentJUR, agreeAmendmentJUR, disputeJUR, voteJUR]).then(() => {

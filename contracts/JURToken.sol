@@ -22,27 +22,6 @@ contract JURToken is MintableToken {
   }
 
   /**
-   * @dev Override: function to mint tokens
-   * @param _to The address that will receive the minted tokens.
-   * @param _amount The amount of tokens to mint.
-   * @return A boolean that indicates if the operation was successful.
-   */
-  function mint(
-    address _to,
-    uint256 _amount
-  )
-    canMint
-    public
-    returns (bool)
-  {
-    totalSupply_ = totalSupply_.add(_amount);
-    balances[_to] = balances[_to].add(_amount);
-    emit Mint(_to, _amount);
-    emit Transfer(address(0), _to, _amount);
-    return true;
-  }
-
-  /**
    * @dev Adds / removes functions from list of functions which are allowed with approve and call
    * @param _sig Signature of function to add / remove
    * @param _valid Whether the function should be added or removed
