@@ -47,7 +47,7 @@ This will display some warnings due to OpenZeppelin library files which can be i
 
 ## Running Test Network
 
-To run a test ethereum network, in a separate terminal execute:  
+To run a test network, in a separate terminal execute:  
 `ganache-cli --gasLimit 7000000`
 
 ## Deployment

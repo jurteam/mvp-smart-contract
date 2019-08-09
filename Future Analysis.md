@@ -1,4 +1,6 @@
-# JUR Analysis
+# Jur Analysis
+
+The following analysis (Jun 2018) covers aspects that were mentioned in the WP V.0.3.0 and will soon be updated to match the current state of the art.
 
 ## Closed Hubs
 
@@ -89,7 +91,7 @@ Documents that form part of the dispute process are in any way subject to being 
 
 ## Roadmap
 
-Items that should be on the roadmap post-ICO:
+Items that should be on the roadmap:
 
   - develop closed hub contracts providing the ability for closed hub owners / members to customise their hubs appropriately.
 

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Jur A.G. intends to introduce JUR, an ERC20 compliant token on the Ethereum blockchain.
+Jur AG intends to introduce JUR, an ERC20 compliant token on the VeChainThor blockchain.
 
 The JUR token will be used:  
 
@@ -10,9 +10,11 @@ The JUR token will be used:
 
   - to provide utility to resolve disputes, should they arise, in any Jur Agreement Contracts.
 
+The following protocol specification follows the project defined in the WP V.0.3.0 and will be soon updated.
+
 ## Use Case
 
-Smart contracts running on the Ethereum blockchain allow simple escrow agreements, where funds are held by a smart contract, and then delivered to one or more parties based on a pre-determined set of codified rules.
+Smart contracts running on the VeChainThor blockchain allow simple escrow agreements, where funds are held by a smart contract, and then delivered to one or more parties based on a pre-determined set of codified rules.
 
 However, for many real life cases, it is not possible to codify (within a Turing complete language) the rules which determine how and when escrow funds should be dispersed.
 
@@ -32,8 +34,8 @@ There are then three possible outcomes:
 
 In order to initialise a Jur Agreement Contract, two parties (Party A and Party B) must agree on the following state:
 
-  - Party A (encoded as an Ethereum address)
-  - Party B (encoded as an Ethereum address)
+  - Party A (encoded as a VeChainThor address address)
+  - Party B (encoded as a VeChainThor address address)
   - Agreement (details of the contractual agreement between Party A and Party B, encoded as a hash of arbitrary data stored off-chain)
   - Dispersal (encoded as a pair `[disperseA, disperseB]` denominated in JUR, where `disperseA` / `disperseB` are the amounts returned to Party A and B respectively on completion of the contract)
   - Escrowed Funds (encoded as a pair `[fundingA, fundingB]` denominated in JUR, where `fundingA` / `fundingB` are the amounts to be funded by Party A and B respectively)
@@ -91,8 +93,8 @@ For example, as above, Alice places the JAC into a Dispute state, with a Dispute
 
 A JAC which has been in a Dispute state for 24 hours, therefore has the following state:
 
-- Party A (encoded as an Ethereum address)
-- Party B (encoded as an Ethereum address)
+- Party A (encoded as an VeChainThor address address)
+- Party B (encoded as an VeChainThor address address)
 - Agreement (details of the contractual agreement between Party A and Party B, encoded as a hash of arbitrary data stored off-chain)
 - [Original or Amended] Dispersal (encoded as a pair `[disperseA, disperseB]` denominated in JUR)
 - Party A Dispute Dispersal (encoded as a pair `[partyA_dispute_disperseA, partyA_dispute_disperseB]` denominated in JUR)
@@ -204,13 +206,13 @@ To transfer tokens to the JAC we will use the ERC223 `tokenFallback` method.
 
 In order to reduce attack surfaces, the contract should:
 
-  - conform to Solidity / Ethereum best practices.
+  - conform to Solidity / VeChainThor address best practices.
 
   - be independently audited by at least two Solidity experts.
 
   - have a bug bounty process open to the public running for at least two weeks.
 
-  - only hold JUR tokens, and not Ether (enforced through the fallback function).
+  - only hold JUR tokens, and not VET (enforced through the fallback function).
 
   - use best practices in terms of staking (see Voting / Staking section).
 
