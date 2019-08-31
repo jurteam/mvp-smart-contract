@@ -77,6 +77,12 @@ contract('Arbitration - Simple dispute', function (accounts) {
     assert.equal(state, 1);
   });
 
+  it("5a. party1 agrees arbitration", async () => {
+    await arbitration.agree({from: party1});
+    let state = await arbitration.state();
+    assert.equal(state, 1);
+  });
+
   it("6. party1 disputes arbitration with insufficient vote - fail", async () => {
     await token.mint(party1, 10, {from: accounts[0]});
     await token.approve(arbitration.address, 10, {from: party1});
