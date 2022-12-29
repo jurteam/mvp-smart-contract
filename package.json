@@ -21,7 +21,7 @@
   "homepage": "https://github.com/jurteam/mvp-smart-contract#readme",
   "dependencies": {
     "bluebird": "^3.5.5",
-    "ganache-cli": "^6.1.3",
+    "ganache-cli": "^6.12.2",
     "openzeppelin-solidity": "^1.10.0",
     "truffle": "^4.1.11"
   },
